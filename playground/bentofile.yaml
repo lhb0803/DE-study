@@ -1,0 +1,11 @@
+service: "bento_serve_hb.py:svc"
+labels:
+  owner: hblee
+  project: pipeliner
+include:
+- "*.py"
+python:
+  packages:
+      - "scikit-learn==1.1.1"
+      - "pandas==1.2.5"
+      - "xgboost==1.5.0"
