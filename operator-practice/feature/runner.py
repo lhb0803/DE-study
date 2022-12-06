@@ -2,6 +2,8 @@ import requests
 from datetime import datetime, timedelta, timezone
 import json
 import argparse
+import boto3
+import os
 
 SERVER_URL = 'https://api.upbit.com'
 
@@ -42,6 +44,21 @@ def get_ohlcv(market:str, dtime: str, count=1) -> list:
     ohlcv_list.reverse()
     return ohlcv_list
 
+def put_s3(aws_access_key, aws_secret_key, bucket_name, file_name, data):
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=aws_access_key,
+        aws_secret_access_key=aws_secret_key
+    )
+
+    s3.put_object(
+        Bucket=bucket_name,
+        Key=f'{file_name}.json',
+        Body=bytes(json.dumps(data).encode('UTF-8'))
+    )
+    print("put s3")
+
+
 def main():
     argp = argparse.ArgumentParser()
     argp.add_argument("--m", help="which market and which crypto", type=str)
@@ -54,6 +71,10 @@ def main():
 
     print(f"Candles Count: {len(candle_type_list)}")
     print(f"Lastet Candle: {candle_type_list[-1]}")
+
+    aws_access_key = os.environ['AWS_ACCESS_KEY']
+    aws_secret_key = os.environ['AWS_SECRET_KEY']
+    put_s3(aws_access_key, aws_secret_key, 'hb-operator-test', f'{args.t} candle', candle_type_list)
 
 if __name__ == "__main__":
     main()
