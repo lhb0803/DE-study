@@ -4,28 +4,25 @@ import json
 import argparse
 import boto3
 import os
+from candle import Candle
+from time import sleep
 
 SERVER_URL = 'https://api.upbit.com'
 
 KST = timezone(timedelta(hours=9))
 
-def get_candle_type(candle: dict, p=0.8) -> list:
-    """
-    Return Sticks
-    `[False, False]`: Red Short Stick
-    `[False, True]`: Red Long Stick
-    `[True, False]`: Blue Short Stick
-    `[True, True]`: Blue Long Stick
+def get_decision_type(candle: dict, history_cnt=5) -> list:
+    c = Candle(o = candle['open'], h = candle['high'], l = candle['low'], c = candle['close'])
+    market = candle['market']
+    dtime = candle['candle_date_time_kst']
+    history_list = get_ohlcv(market, dtime, history_cnt)
+    fop, fcp, lop, lcp = history_list[0]['open'], history_list[0]['close'], history_list[-1]['open'], history_list[-1]['close']
+    c.determine_history(fop, fcp, lop, lcp)
 
-    [reference](https://stockmong.tistory.com/m/27)
-    """
-    shadow_len = candle['high'] - candle['low']
-    body_len = candle['close'] - candle['open']
+    return c.get_buy_or_sell()
 
-    return [body_len > 0, body_len **2 > (shadow_len * p) **2]
-
-def get_ohlcv(market:str, dtime: str, count=1) -> list:
-    url = f"{SERVER_URL}/v1/candles/minutes/1?unit=1&market={market}&to={dtime}&count={count}"
+def get_ohlcv(market:str, dtime: str, count=1, unit=1) -> list:
+    url = f"{SERVER_URL}/v1/candles/minutes/1?unit={unit}&market={market}&to={dtime}&count={count}"
     headers = {"accept": "application/json"}
     response = requests.get(url, headers=headers)
     resp_list = json.loads(response.text)
@@ -33,6 +30,8 @@ def get_ohlcv(market:str, dtime: str, count=1) -> list:
     for tick in resp_list:
         ohlcv_list.append(
             {
+                'market': tick['market'],
+                'candle_date_time_kst': tick['candle_date_time_kst'],
                 'timestamp': tick['timestamp'],
                 'open': tick['opening_price'],
                 'high': tick['high_price'],
@@ -67,14 +66,17 @@ def main():
 
     args = argp.parse_args()
     candles = get_ohlcv(args.m, args.t, args.c)
-    candle_type_list = [get_candle_type(candle) for candle in candles]
+    decision_list = []
+    for candle in candles:
+        decision_list.append(get_decision_type(candle, 10))
+        sleep(1) # for api call restriction
 
-    print(f"Candles Count: {len(candle_type_list)}")
-    print(f"Lastet Candle: {candle_type_list[-1]}")
+    print(f"Candles Count: {len(decision_list)}")
+    print(f"Latest Decision: {decision_list[-1]}")
 
     aws_access_key = os.environ['AWS_ACCESS_KEY']
     aws_secret_key = os.environ['AWS_SECRET_KEY']
-    put_s3(aws_access_key, aws_secret_key, 'hb-operator-test', f'{args.t} candle', candle_type_list)
+    put_s3(aws_access_key, aws_secret_key, 'hb-ohlcv-buy-or-sell', f'{args.t} candles', {'candles': candles, 'decision': decision_list})
 
 if __name__ == "__main__":
     main()

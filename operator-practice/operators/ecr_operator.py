@@ -12,4 +12,4 @@ if __name__ == "__main__":
     dnow = datetime.now() + timedelta(hours=9)
     dtime = dnow.strftime("%Y-%m-%d %H:%M:%S")
     print(dtime)
-    get_candle_info("KRW-BTC", dtime, 5)
+    get_candle_info("KRW-BTC", dtime, 60)
