@@ -101,3 +101,5 @@ class Candle:
                 return SELL
             else:
                 return BUY
+        else:
+            return STAY
