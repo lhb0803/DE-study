@@ -76,7 +76,8 @@ def main():
 
     aws_access_key = os.environ['AWS_ACCESS_KEY']
     aws_secret_key = os.environ['AWS_SECRET_KEY']
-    put_s3(aws_access_key, aws_secret_key, 'hb-ohlcv-buy-or-sell', f'{args.t} candles', {'candles': candles, 'decision': decision_list})
+    put_s3(aws_access_key, aws_secret_key, 'hb-ohlcv-buy-or-sell', f'{args.t} candles', {'candles': candles})
+    put_s3(aws_access_key, aws_secret_key, 'hb-ohlcv-buy-or-sell', f'{args.t} decision v1', {'decision': decision_list})
 
 if __name__ == "__main__":
     main()
