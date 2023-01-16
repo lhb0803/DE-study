@@ -1,7 +1,7 @@
 # load data -> train pycaret model
 source ~/anaconda3/etc/profile.d/conda.sh
 conda activate py38
-python train.py
+python /home/ubuntu/airflow/operators/train.py
 
 echo "Build Docker Image..."
 sudo docker image build . -t pycaret_lgbm:latest
