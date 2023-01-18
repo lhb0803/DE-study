@@ -12,5 +12,7 @@ sudo docker tag pycaret_lgbm:latest 433166909747.dkr.ecr.ap-northeast-2.amazonaw
 aws ecr get-login-password --region ap-northeast-2 | sudo docker login --username AWS --password-stdin 433166909747.dkr.ecr.ap-northeast-2.amazonaws.com
 sudo docker push 433166909747.dkr.ecr.ap-northeast-2.amazonaws.com/pycaret_lgbm
 
+echo "Docker Image Pushed"
+
 # move to home dir
 cd ~
