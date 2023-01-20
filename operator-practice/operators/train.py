@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import json
 from datetime import datetime, timedelta
+from pytz
 
 from pycaret.classification import *
 
@@ -48,7 +49,7 @@ def train(data):
 
 
 if __name__ == "__main__":
-    yesterday = datetime.now() + timedelta(hours=9) - timedelta(days=1) # KST
+    yesterday = datetime.now(pytz.timezone('Asia/Seoul')) - timedelta(days=1) # KST
     to_dt = datetime(yesterday.year, yesterday.month, yesterday.day)
     from_dt = to_dt - timedelta(days=3)
 
