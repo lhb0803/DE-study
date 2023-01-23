@@ -1,4 +1,6 @@
 # load data -> train pycaret model
+date
+echo "Started"
 source ~/anaconda3/etc/profile.d/conda.sh
 conda activate py38
 cd /home/ubuntu/airflow/operators/
