@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import json
 from datetime import datetime, timedelta
-from pytz
+import pytz
 
 from pycaret.classification import *
 
