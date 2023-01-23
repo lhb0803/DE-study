@@ -18,3 +18,6 @@ echo "Docker Image Pushed"
 
 # move to home dir
 cd ~
+
+# delete all docker images for device space
+sudo docker rmi $(sudo docker images -q) -f
