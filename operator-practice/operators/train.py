@@ -44,7 +44,7 @@ def train(data):
     final_lgbm = finalize_model(tuned_lgbm)
     print("Train end!")
 
-    create_api(final_lgbm, 'pycaret/lgbm_api')
+    create_api(final_lgbm, 'pycaret/lgbm_api', host='0.0.0.0')
     create_docker('pycaret/lgbm_api')
 
 
