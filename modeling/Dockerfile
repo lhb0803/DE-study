@@ -1,14 +1,12 @@
 
     
-FROM python:3.8-buster
+FROM python:3.8-slim
 
 WORKDIR /app
 
 ADD . /app
 
 RUN apt-get update && apt-get install -y libgomp1
-
-RUN python -m pip install --upgrade pip
 
 RUN pip install -r requirements.txt
 
