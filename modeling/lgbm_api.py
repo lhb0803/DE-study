@@ -12,9 +12,9 @@ model = load_model('lgbm_api')
 
 # Define predict function
 @app.post('/predict')
-def predict(candle_date_time_kst, open, high, low, close, volume):
-    data = pd.DataFrame([[candle_date_time_kst, open, high, low, close, volume]])
-    data.columns = ['candle_date_time_kst', 'open', 'high', 'low', 'close', 'volume']
+def predict(candle_date_time_kst, open, high, low, close, volume, sentiment, new_author_rate, heavy_author_rate):
+    data = pd.DataFrame([[candle_date_time_kst, open, high, low, close, volume, sentiment, new_author_rate, heavy_author_rate]])
+    data.columns = ['candle_date_time_kst', 'open', 'high', 'low', 'close', 'volume', 'sentiment', 'new_author_rate', 'heavy_author_rate']
     predictions = predict_model(model, data=data) 
     return {'prediction': list(predictions['Label'])}
 
